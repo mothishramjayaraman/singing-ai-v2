@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Mic, Square, RotateCcw, Loader2, AlertCircle } from "lucide-react";
+import { useLocation } from "wouter";
+import { Mic, Square, RotateCcw, Loader2, AlertCircle, Music, Gauge } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -20,6 +21,11 @@ interface PracticeData {
 }
 
 export default function Practice() {
+  const [location] = useLocation();
+  // Access state from window.history.state for song data passed from Song Library
+  const songFromLibrary = (window.history.state as any)?.song;
+  const backingTrackInfo = (window.history.state as any)?.backingTrack;
+  
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [analysisResult, setAnalysisResult] = useState<Omit<VoiceAnalysis, "id"> | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -54,8 +60,11 @@ export default function Practice() {
       return response.json();
     },
     onSuccess: () => {
+      // Invalidate all relevant queries to update UI
       queryClient.invalidateQueries({ queryKey: ["/api/exercises"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/phase"] }); // Update phase completion %
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] }); // Update user stats
     },
   });
 
@@ -105,23 +114,80 @@ export default function Practice() {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Voice Practice</h1>
+        <h1 className="text-3xl font-bold">
+          {songFromLibrary ? `Practice: ${songFromLibrary.title}` : "Voice Practice"}
+        </h1>
         <p className="text-muted-foreground">
-          Record your voice and get instant AI-powered feedback
+          {songFromLibrary 
+            ? `${songFromLibrary.artist} • ${songFromLibrary.genre} • ${songFromLibrary.key} • ${songFromLibrary.bpm} BPM`
+            : "Record your voice and get instant AI-powered feedback"}
         </p>
       </div>
+
+      {songFromLibrary && backingTrackInfo && (
+        <Card className="bg-primary/5 border-primary/20">
+          <CardContent className="pt-6">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <Music className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex-1 space-y-3">
+                <div>
+                  <h3 className="font-semibold text-lg">Song Practice Mode</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {backingTrackInfo.description}
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                  <div>
+                    <p className="text-muted-foreground">Difficulty</p>
+                    <p className="font-medium capitalize">{songFromLibrary.difficulty}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Vocal Range</p>
+                    <p className="font-medium capitalize">{songFromLibrary.vocalRange}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Key</p>
+                    <p className="font-medium">{songFromLibrary.key}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Tempo</p>
+                    <p className="font-medium">{songFromLibrary.bpm} BPM</p>
+                  </div>
+                </div>
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="text-sm font-medium mb-2">💡 Practice Tips:</p>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• Warm up your voice before singing</li>
+                    <li>• Focus on matching the key ({songFromLibrary.key})</li>
+                    <li>• Keep the tempo steady at {songFromLibrary.bpm} BPM</li>
+                    <li>• Record multiple takes to track your progress</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
           <Card data-testid="card-recorder">
             <CardHeader>
               <CardTitle>
-                {selectedExercise ? selectedExercise.name : "Voice Recorder"}
+                {songFromLibrary 
+                  ? `Sing: ${songFromLibrary.title}` 
+                  : selectedExercise 
+                    ? selectedExercise.name 
+                    : "Voice Recorder"}
               </CardTitle>
               <CardDescription>
-                {selectedExercise
-                  ? selectedExercise.description
-                  : "Select an exercise or record freely"}
+                {songFromLibrary
+                  ? `Practice singing this song and get AI feedback on your performance`
+                  : selectedExercise
+                    ? selectedExercise.description
+                    : "Select an exercise or record freely"}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">

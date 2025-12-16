@@ -1,11 +1,21 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, integer, real, boolean, jsonb } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  varchar,
+  integer,
+  real,
+  boolean,
+  jsonb,
+} from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // User profile with singing preferences
 export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
   experienceLevel: text("experience_level").notNull(), // beginner, intermediate, advanced
   vocalRange: text("vocal_range"), // soprano, alto, tenor, bass, baritone
@@ -26,7 +36,9 @@ export type User = typeof users.$inferSelect;
 
 // Exercise definitions
 export const exercises = pgTable("exercises", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
   description: text("description").notNull(),
   phase: integer("phase").notNull(), // 1, 2, or 3
@@ -45,8 +57,10 @@ export type Exercise = typeof exercises.$inferSelect;
 
 // User exercise progress
 export const exerciseProgress = pgTable("exercise_progress", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  oderId: varchar("user_id").notNull(),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
   exerciseId: varchar("exercise_id").notNull(),
   completed: boolean("completed").notNull().default(false),
   pitchScore: real("pitch_score"),
@@ -57,16 +71,22 @@ export const exerciseProgress = pgTable("exercise_progress", {
   feedback: text("feedback"),
 });
 
-export const insertExerciseProgressSchema = createInsertSchema(exerciseProgress).omit({
+export const insertExerciseProgressSchema = createInsertSchema(
+  exerciseProgress
+).omit({
   id: true,
 });
 
-export type InsertExerciseProgress = z.infer<typeof insertExerciseProgressSchema>;
+export type InsertExerciseProgress = z.infer<
+  typeof insertExerciseProgressSchema
+>;
 export type ExerciseProgress = typeof exerciseProgress.$inferSelect;
 
 // Voice analysis results
 export const voiceAnalysis = pgTable("voice_analysis", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull(),
   pitchAccuracy: real("pitch_accuracy").notNull(),
   toneStability: real("tone_stability").notNull(),
@@ -76,16 +96,20 @@ export const voiceAnalysis = pgTable("voice_analysis", {
   analyzedAt: text("analyzed_at").notNull(),
 });
 
-export const insertVoiceAnalysisSchema = createInsertSchema(voiceAnalysis).omit({
-  id: true,
-});
+export const insertVoiceAnalysisSchema = createInsertSchema(voiceAnalysis).omit(
+  {
+    id: true,
+  }
+);
 
 export type InsertVoiceAnalysis = z.infer<typeof insertVoiceAnalysisSchema>;
 export type VoiceAnalysis = typeof voiceAnalysis.$inferSelect;
 
 // Song recommendations
 export const songs = pgTable("songs", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   title: text("title").notNull(),
   artist: text("artist").notNull(),
   genre: text("genre").notNull(),
@@ -104,7 +128,9 @@ export type Song = typeof songs.$inferSelect;
 
 // Practice routines
 export const practiceRoutines = pgTable("practice_routines", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull(),
   week: integer("week").notNull(),
   exerciseIds: jsonb("exercise_ids").$type<string[]>().notNull(),
@@ -112,7 +138,9 @@ export const practiceRoutines = pgTable("practice_routines", {
   completedMinutes: integer("completed_minutes").notNull().default(0),
 });
 
-export const insertPracticeRoutineSchema = createInsertSchema(practiceRoutines).omit({
+export const insertPracticeRoutineSchema = createInsertSchema(
+  practiceRoutines
+).omit({
   id: true,
 });
 
@@ -121,7 +149,9 @@ export type PracticeRoutine = typeof practiceRoutines.$inferSelect;
 
 // Performance sessions
 export const performances = pgTable("performances", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull(),
   songId: varchar("song_id"),
   audienceReactions: jsonb("audience_reactions").$type<string[]>(),
@@ -158,9 +188,9 @@ export const phases: Phase[] = [
       "Pitch accuracy training",
       "Tone stability exercises",
       "Breathing techniques",
-      "Weekly practice routines"
+      "Weekly practice routines",
     ],
-    unlockCriteria: "Start your journey"
+    unlockCriteria: "Start your journey",
   },
   {
     id: 2,
@@ -172,9 +202,9 @@ export const phases: Phase[] = [
       "Genre-based backing tracks",
       "Adaptive difficulty",
       "Expression coaching",
-      "Style development"
+      "Style development",
     ],
-    unlockCriteria: "Complete Phase 1 with 70% average score"
+    unlockCriteria: "Complete Phase 1 with 70% average score",
   },
   {
     id: 3,
@@ -186,8 +216,8 @@ export const phases: Phase[] = [
       "Audience reactions",
       "Stage effects",
       "Audio mastering",
-      "Performance analysis"
+      "Performance analysis",
     ],
-    unlockCriteria: "Complete Phase 2 with 75% average score"
-  }
+    unlockCriteria: "Complete Phase 2 with 75% average score",
+  },
 ];

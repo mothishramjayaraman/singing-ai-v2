@@ -87,6 +87,10 @@ export default function Settings() {
         title: "Progress reset",
         description: "Your learning progress has been reset.",
       });
+      // Reload the page to show updated stats
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     },
   });
 

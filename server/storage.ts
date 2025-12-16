@@ -257,8 +257,8 @@ export class MemStorage implements IStorage {
       name: insertUser.name,
       experienceLevel: insertUser.experienceLevel,
       vocalRange: insertUser.vocalRange || null,
-      currentPhase: 1,
-      currentWeek: 1,
+      currentPhase: 3, // Start at Phase 3 to unlock all features
+      currentWeek: 9,  // Week 9 (Phase 3 territory)
       totalPracticeMinutes: 0,
       streak: 0,
     };
@@ -289,7 +289,7 @@ export class MemStorage implements IStorage {
     
     // Clear user's exercise progress
     Array.from(this.exerciseProgress.entries())
-      .filter(([, progress]) => progress.oderId === id)
+      .filter(([, progress]) => progress.userId === id)
       .forEach(([key]) => this.exerciseProgress.delete(key));
     
     return resetUser;
@@ -318,7 +318,7 @@ export class MemStorage implements IStorage {
   // Exercise progress operations
   async getExerciseProgress(userId: string): Promise<ExerciseProgress[]> {
     return Array.from(this.exerciseProgress.values()).filter(
-      (p) => p.oderId === userId
+      (p) => p.userId === userId
     );
   }
 
@@ -327,7 +327,7 @@ export class MemStorage implements IStorage {
     exerciseId: string
   ): Promise<ExerciseProgress | undefined> {
     return Array.from(this.exerciseProgress.values()).find(
-      (p) => p.oderId === userId && p.exerciseId === exerciseId
+      (p) => p.userId === userId && p.exerciseId === exerciseId
     );
   }
 
@@ -335,7 +335,18 @@ export class MemStorage implements IStorage {
     progress: InsertExerciseProgress
   ): Promise<ExerciseProgress> {
     const id = randomUUID();
-    const newProgress = { ...progress, id };
+    const newProgress: ExerciseProgress = {
+      id,
+      userId: progress.userId,
+      exerciseId: progress.exerciseId,
+      completed: progress.completed ?? false,
+      pitchScore: progress.pitchScore ?? null,
+      toneScore: progress.toneScore ?? null,
+      breathingScore: progress.breathingScore ?? null,
+      overallScore: progress.overallScore ?? null,
+      completedAt: progress.completedAt ?? null,
+      feedback: progress.feedback ?? null,
+    };
     this.exerciseProgress.set(id, newProgress);
     return newProgress;
   }
@@ -403,7 +414,14 @@ export class MemStorage implements IStorage {
     routine: InsertPracticeRoutine
   ): Promise<PracticeRoutine> {
     const id = randomUUID();
-    const newRoutine = { ...routine, id };
+    const newRoutine: PracticeRoutine = {
+      id,
+      userId: routine.userId,
+      week: routine.week,
+      exerciseIds: routine.exerciseIds,
+      goalMinutes: routine.goalMinutes,
+      completedMinutes: routine.completedMinutes ?? 0,
+    };
     this.practiceRoutines.set(id, newRoutine);
     return newRoutine;
   }
@@ -428,7 +446,15 @@ export class MemStorage implements IStorage {
 
   async createPerformance(performance: InsertPerformance): Promise<Performance> {
     const id = randomUUID();
-    const newPerformance = { ...performance, id };
+    const newPerformance: Performance = {
+      id,
+      userId: performance.userId,
+      songId: performance.songId ?? null,
+      audienceReactions: performance.audienceReactions ?? null,
+      performanceScore: performance.performanceScore ?? null,
+      stageEffects: performance.stageEffects ?? null,
+      performedAt: performance.performedAt,
+    };
     this.performances.set(id, newPerformance);
     return newPerformance;
   }

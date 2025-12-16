@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import {
   ArrowLeft,
@@ -55,12 +55,15 @@ export default function Perform() {
     await startRecording();
   };
 
-  const handleStopPerformance = () => {
-    stopRecording();
+  const handleStopPerformance = async () => {
+    await stopRecording();
     setState("analyzing");
-    
-    setTimeout(async () => {
-      if (audioBlob) {
+  };
+
+  // Analyze audio when recording stops and audioBlob is available
+  useEffect(() => {
+    const analyzePerformance = async () => {
+      if (state === "analyzing" && audioBlob) {
         const analysis = await analyzeVoice(audioBlob);
         setAnalysisResult(analysis);
         
@@ -69,8 +72,10 @@ export default function Perform() {
         
         setState("results");
       }
-    }, 500);
-  };
+    };
+
+    analyzePerformance();
+  }, [audioBlob, state]);
 
   const handleApplyMastering = async () => {
     if (!audioBlob) return;

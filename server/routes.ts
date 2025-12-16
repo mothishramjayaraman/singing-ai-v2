@@ -210,7 +210,7 @@ export async function registerRoutes(
       } else {
         // Create new progress
         const newProgress = await storage.createExerciseProgress({
-          oderId: user.id,
+          userId: user.id,
           exerciseId,
           completed: true,
           pitchScore,

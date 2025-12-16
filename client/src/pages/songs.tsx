@@ -209,7 +209,12 @@ export default function Songs() {
 
                 <Button
                   className="w-full"
-                  onClick={() => setLocation("/practice")}
+                  onClick={() => setLocation("/practice", { 
+                    state: { 
+                      song: selectedSong, 
+                      backingTrack 
+                    } 
+                  })}
                   data-testid="button-practice-song"
                 >
                   Practice This Song

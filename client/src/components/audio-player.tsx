@@ -55,8 +55,12 @@ export function AudioPlayer({ audioUrl, onDelete, className = "" }: AudioPlayerP
 
   const handleSeek = (value: number[]) => {
     if (!audioRef.current) return;
-    audioRef.current.currentTime = value[0];
-    setCurrentTime(value[0]);
+    const seekTime = value[0];
+    // Only set currentTime if it's a valid finite number
+    if (isFinite(seekTime) && isFinite(duration) && duration > 0) {
+      audioRef.current.currentTime = seekTime;
+      setCurrentTime(seekTime);
+    }
   };
 
   const handleVolumeChange = (value: number[]) => {
@@ -79,6 +83,10 @@ export function AudioPlayer({ audioUrl, onDelete, className = "" }: AudioPlayerP
   };
 
   const formatTime = (time: number) => {
+    // Handle NaN, Infinity, or invalid values
+    if (!isFinite(time) || time < 0) {
+      return "0:00";
+    }
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
@@ -109,10 +117,11 @@ export function AudioPlayer({ audioUrl, onDelete, className = "" }: AudioPlayerP
 
         <div className="flex-1 space-y-1">
           <Slider
-            value={[currentTime]}
-            max={duration || 100}
+            value={[isFinite(currentTime) ? currentTime : 0]}
+            max={isFinite(duration) && duration > 0 ? duration : 100}
             step={0.1}
             onValueChange={handleSeek}
+            disabled={!isFinite(duration) || duration === 0}
             data-testid="slider-seek"
           />
           <div className="flex justify-between text-xs text-muted-foreground font-mono">
