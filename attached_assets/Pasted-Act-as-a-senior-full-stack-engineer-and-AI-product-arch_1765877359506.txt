@@ -1,0 +1,100 @@
+Act as a senior full-stack engineer and AI product architect.
+
+Build a fully runnable web application named **SingSmart AI**, a beginner-friendly singing education platform powered by generative AI concepts.
+
+The app must run end-to-end in Replit with no paid APIs, using mock AI logic where needed, and be cleanly structured for future real AI integration.
+
+================================
+TECH STACK (MANDATORY)
+================================
+Frontend:
+- React + Vite
+- Tailwind CSS
+- Web Audio API (mic input, playback)
+
+Backend:
+- Node.js + Express
+- Simple data storage (JSON or SQLite)
+
+Architecture:
+- Clear separation: frontend / backend / services
+- Mock AI services with comments showing where OpenAI Audio, Suno, or Udio APIs would plug in
+
+================================
+CORE APP FLOW
+================================
+
+### User Onboarding
+- Collect: name, experience level, vocal range (optional)
+- Store user profile and progress
+
+### Learning System
+Implement a **3-phase progression system** with UI navigation and locked/unlocked phases.
+
+--------------------------------
+PHASE 1: Foundation (Weeks 1–4)
+--------------------------------
+Features:
+- Microphone voice recording
+- Mock voice analysis:
+  - Pitch accuracy
+  - Tone stability
+  - Breathing consistency
+- Visual feedback (scores, meters, charts)
+- AI-generated vocal warm-up exercises
+- Auto-generated weekly practice routine
+
+--------------------------------
+PHASE 2: Technique & Expression (Weeks 5–8)
+--------------------------------
+Features:
+- Song recommendation based on vocal range & style
+- Mock generative backing tracks (genre-based)
+- Adaptive difficulty system:
+  - Adjust exercises based on previous scores
+
+--------------------------------
+PHASE 3: Performance & Confidence (Weeks 9–12)
+--------------------------------
+Features:
+- Virtual performance simulator:
+  - Simulated audience reactions (text, visuals, or sound effects)
+- Mock generative performance video:
+  - Visual overlays and stage effects
+- Basic audio mastering:
+  - Volume normalization
+  - Clarity enhancement
+
+================================
+DASHBOARD & UI
+================================
+- Clean, modern, beginner-friendly UI
+- User dashboard showing:
+  - Weekly goals
+  - Phase progress
+  - Performance scores
+  - Completed exercises
+- Audio recording & playback controls
+- Clear phase navigation
+
+================================
+DELIVERABLES
+================================
+- Fully runnable Replit project
+- Complete frontend and backend code
+- Mock AI services with clear extensibility
+- Sample demo data
+- README.md explaining:
+  - How the app works
+  - Folder structure
+  - How to replace mock AI with real APIs
+
+================================
+IMPORTANT CONSTRAINTS
+================================
+- No external paid APIs
+- No broken or placeholder UI elements
+- Code must be commented and readable
+- Focus on real usability, not just mockups
+
+Generate the complete project with all required files and code.
